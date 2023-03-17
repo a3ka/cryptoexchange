@@ -1,0 +1,57 @@
+{
+  "name": "node-soa-template",
+  "version": "0.0.0",
+  "description": "Node js SOA template",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "lint": "eslint . && tsc --project .",
+    "start": "node src/main.js",
+    "build": "prisma generate && node ./prisma/sanitise.js",
+    "test": "NODE_ENV=test tap --no-coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mprudnik/node-soa-template.git"
+  },
+  "author": "Maksym Prudnik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mprudnik/node-soa-template/issues"
+  },
+  "homepage": "https://github.com/mprudnik/node-soa-template#readme",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@fastify/auth": "^4.2.0",
+    "@fastify/cors": "^8.2.0",
+    "@fastify/swagger": "^8.2.1",
+    "@fastify/swagger-ui": "^1.3.0",
+    "@fastify/websocket": "^7.1.2",
+    "@prisma/client": "^4.10.1",
+    "fastify": "^4.10.2",
+    "fastify-plugin": "^4.4.0",
+    "pino": "^8.7.0",
+    "prisma-json-schema-generator": "^2.0.17",
+    "redis": "^4.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.8",
+    "@types/ws": "^8.5.4",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.22.0",
+    "eslint-config-metarhia": "^8.1.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "json-schema-to-ts": "^2.6.2",
+    "pino-pretty": "^10.0.0",
+    "prettier": "^2.7.1",
+    "prisma": "^4.10.1",
+    "tap": "^16.3.4",
+    "typescript": "^5.0.2"
+  }
+}
