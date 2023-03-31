@@ -4,12 +4,14 @@ import { processServiceError } from './error.js';
 import * as notification from './notification/notification.js';
 import * as auth from './auth/auth.js';
 import * as account from './account/account.js';
+import * as hello from './hello/hello.js';
 
 /** @type {Record<string, Service>} */
 const services = {
   auth,
   notification,
   account,
+  hello,
 };
 
 /** @type ServiceFuncs['init'] */
