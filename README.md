@@ -7,6 +7,15 @@
 Don't forget to setup Redis and Postgres before start.
 Use docker for quick run of redis and postgres.
 
+Example docker redis and postgers:
+```sh
+# Redis
+sudo docker run -p 6379:6379 --name redis_stack_dev -d redis/redis-stack-server:latest
+
+# Postgres
+docker run --name pg_dev -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d postgres
+```
+
 1. Create **.env** file and write env varibale DATABASE_URL
    example of env file:
 
