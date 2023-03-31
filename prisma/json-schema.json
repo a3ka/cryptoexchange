@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "passwordHash": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "udpatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Session"
+          }
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Account"
+          }
+        }
+      }
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "Account": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "owner": {
+          "$ref": "#/definitions/User"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AccountStatement"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AccountTransaction"
+          }
+        }
+      }
+    },
+    "AccountStatement": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "balance": {
+          "type": "number"
+        },
+        "account": {
+          "$ref": "#/definitions/Account"
+        },
+        "accountId": {
+          "type": "string"
+        }
+      }
+    },
+    "Ledger": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "liability",
+            "revenue",
+            "expense",
+            "gain",
+            "loss"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LedgerStatement"
+          }
+        },
+        "credits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LedgerTransaction"
+          }
+        },
+        "debits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LedgerTransaction"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AccountTransaction"
+          }
+        }
+      }
+    },
+    "LedgerStatement": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "balance": {
+          "type": "number"
+        },
+        "ledger": {
+          "$ref": "#/definitions/Ledger"
+        },
+        "ledgerId": {
+          "type": "string"
+        }
+      }
+    },
+    "LedgerTransaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "from": {
+          "$ref": "#/definitions/Ledger"
+        },
+        "fromId": {
+          "type": "string"
+        },
+        "to": {
+          "$ref": "#/definitions/Ledger"
+        },
+        "toId": {
+          "type": "string"
+        }
+      }
+    },
+    "AccountTransaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "typeInternal": {
+          "type": "string",
+          "enum": [
+            "credit",
+            "debit"
+          ]
+        },
+        "typeExternal": {
+          "type": "string",
+          "enum": [
+            "deposit",
+            "withdrawal",
+            "bankFee"
+          ]
+        },
+        "ledger": {
+          "$ref": "#/definitions/Ledger"
+        },
+        "ledgerId": {
+          "type": "string"
+        },
+        "account": {
+          "$ref": "#/definitions/Account"
+        },
+        "accountId": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "user": {
+      "$ref": "#/definitions/User"
+    },
+    "session": {
+      "$ref": "#/definitions/Session"
+    },
+    "account": {
+      "$ref": "#/definitions/Account"
+    },
+    "accountStatement": {
+      "$ref": "#/definitions/AccountStatement"
+    },
+    "ledger": {
+      "$ref": "#/definitions/Ledger"
+    },
+    "ledgerStatement": {
+      "$ref": "#/definitions/LedgerStatement"
+    },
+    "ledgerTransaction": {
+      "$ref": "#/definitions/LedgerTransaction"
+    },
+    "accountTransaction": {
+      "$ref": "#/definitions/AccountTransaction"
+    }
+  }
+}
