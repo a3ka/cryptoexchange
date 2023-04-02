@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6e67637-a30d-463b-909d-c31980bbdfc4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/prisma/json-schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/json-schema.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,7 +148,7 @@
       <workItem from="1679582132604" duration="10738000" />
       <workItem from="1680285348342" duration="1221000" />
       <workItem from="1680286589345" duration="28146000" />
-      <workItem from="1680462787982" duration="1740000" />
+      <workItem from="1680462787982" duration="2248000" />
     </task>
     <servers />
   </component>
