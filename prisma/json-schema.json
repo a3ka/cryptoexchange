@@ -33,11 +33,15 @@
             "$ref": "#/definitions/Session"
           }
         },
-        "accounts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Account"
-          }
+        "account": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Account"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -124,19 +128,14 @@
         "id": {
           "type": "string"
         },
-        "type": {
+        "network": {
           "type": "string",
           "enum": [
-            "asset",
-            "liability",
-            "revenue",
-            "expense",
-            "gain",
-            "loss"
+            "btc",
+            "btcTestNetwork",
+            "eth",
+            "guorli"
           ]
-        },
-        "name": {
-          "type": "string"
         },
         "statements": {
           "type": "array",

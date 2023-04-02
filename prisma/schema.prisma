@@ -28,7 +28,7 @@ model User {
   udpatedAt    DateTime @updatedAt
 
   sessions Session[]
-  accounts Account[]
+  account Account?
 }
 
 model Session {
@@ -47,7 +47,7 @@ model Account {
   updatedAt DateTime @updatedAt
 
   owner        User                 @relation(fields: [userId], references: [id])
-  userId       String
+  userId       String               @unique
   statements   AccountStatement[]
   transactions AccountTransaction[]
 }
@@ -63,9 +63,9 @@ model AccountStatement {
 }
 
 model Ledger {
-  id   String     @id @default(uuid())
-  type LedgerType
-  name String     @unique
+  id      String     @id @default(uuid())
+  network NetworkType
+  // name    String     @unique
 
   statements   LedgerStatement[]
   credits      LedgerTransaction[]  @relation(name: "credit")
@@ -73,13 +73,11 @@ model Ledger {
   transactions AccountTransaction[]
 }
 
-enum LedgerType {
-  asset
-  liability
-  revenue
-  expense
-  gain
-  loss
+enum NetworkType {
+  btc
+  btcTestNetwork
+  eth
+  guorli
 }
 
 model LedgerStatement {
