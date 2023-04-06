@@ -1,19 +1,36 @@
-/** @typedef {import('./types').EthWalletPlugin} Plugin */
-// import fastifyPlugin from 'fastify-plugin';
-import { ethers } from 'ethers';
+import bitcoin from 'bitcoinjs-lib';
+import { BIP32Factory } from 'bip32';
+import * as ecc from 'tiny-secp256k1';
+import bip39 from 'bip39';
 
-// const provider = new ethers.providers.JsonRpcProvider(env(RPC_URL));
+const bip32 = BIP32Factory(ecc);
 
-// /** @type Plugin */
-export async function addEthAddressToUser(userNumber) {
+function getAddress(node, network) {
+  return bitcoin.payments.p2pkh({ pubkey: node.publicKey, network }).address;
+}
+
+export async function addBtcAddressToUser(userIndex = 0, network) {
   const MNEMONIC =
-    // env('MNEMONIC') ||
-    'vessel uphold shrimp sell account region use label affair mansion marine matter';
-  const hdnode = ethers.utils.HDNode.fromMnemonic(MNEMONIC);
-  // if (!userNumber) userNumber = '1';
-  const basepathstr = `m/44'/60'/0'/0/${userNumber.toString()}`;
-  // const basepathstr = `m/44'/60'/0'/0/6`;
+    // env('MNEMONIC_BTC') ||
+    'furnace fringe bring wine explain kangaroo pool ugly ecology when steak ' +
+    'meadow letter author book window surround hope lunar lumber eight final ' +
+    'surface report';
+  // Create an HD wallet from the mnemonic
+  const seed = bip39.mnemonicToSeedSync(MNEMONIC);
+  const hdnode = bip32.fromSeed(seed, network);
 
-  const acc = hdnode.derivePath(basepathstr).address;
-  return acc;
+  // Derive the first account from the HD wallet
+  let path;
+  if (network === bitcoin.networks.bitcoin) path = `m/49'/0'/0'/0/${userIndex}`;
+  if (network === bitcoin.networks.testnet) path = `m/49'/1'/0'/0/${userIndex}`;
+
+  const keypair = hdnode.derivePath(path);
+
+  // Return the account's address and private key
+  // return {
+  //   address: keypair.getAddress(),
+  //   privateKey: keypair.toWIF(),
+  // };
+
+  return getAddress(keypair);
 }

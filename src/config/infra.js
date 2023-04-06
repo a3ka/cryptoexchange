@@ -5,6 +5,11 @@ import { nodeEnv } from './util.js';
 export default {
   logger: { env: nodeEnv },
   db: { errorFormat: 'minimal' },
+  // db: {
+  //   log: ['query', 'info', 'warn', 'error'],
+  //   errorFormat: 'colorless',
+  //   debug: true,
+  // },
   redis: {},
   bus: { type: 'local' },
 };

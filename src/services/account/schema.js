@@ -6,7 +6,7 @@ const { account, accountTransaction } = entities;
 
 export const depositInput = /** @type {const} */ ({
   ...schema.strictObjectProperties,
-  required: ['accountId', 'amount'],
+  required: ['accountId', 'amount', 'ledgerNetwork'],
   properties: {
     accountId: account.properties.id,
     amount: accountTransaction.properties.amount,

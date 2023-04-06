@@ -8,6 +8,7 @@ import swagger from './plugins/swagger/swagger.js';
 import customAuth from './plugins/auth/auth.js';
 import customHttp from './plugins/http/http.js';
 import customWebsocket from './plugins/websocket/websocket.js';
+// import addEthAddressToUser from './plugins/eth-address/eth-address.js';
 
 /** @type init */
 export const init = async (infra, api, options) => {
@@ -46,6 +47,8 @@ export const init = async (infra, api, options) => {
       bus,
     });
   }
+
+  // await server.register(addEthAddressToUser);
 
   server.get(healthCheckUrl, async (_req, res) => {
     const dbHealthy = await db.$queryRaw`SELECT 1`.catch(() => false);

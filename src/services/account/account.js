@@ -15,22 +15,32 @@ import {
 const deposit = {
   auth: {},
   input: depositInput,
-  handler: async (infra, { data: { accountId, amount } }) => {
+  handler: async (infra, { data: { accountId, amount, ledgerNetwork } }) => {
     const { db, bus } = infra;
 
-    const ledger = await db.ledger.findUnique({ where: { name: 'HouseCash' } });
-    if (!ledger) throw new ServiceError('Transaction failed');
+    const ledger = await db.ledger.findUnique({
+      where: {
+        AND: [{ accountId }, { network: ledgerNetwork }],
+      },
+    });
+    if (!ledger) throw new ServiceError('Ledger is doesnt exist. You should first create a wallet');
 
     await db.accountTransaction.create({
       data: {
         accountId,
         amount,
-        ledgerId: ledger.id,
+        ledgerId: ledger.walletNumber,
         typeInternal: 'debit',
         typeExternal: 'deposit',
       },
     });
-    await bus.publish('account:deposit', { data: { accountId, amount } });
+    await bus.publish('account:deposit', {
+      data: {
+        accountId,
+        amount,
+        ledgerNetwork,
+      },
+    });
   },
 };
 

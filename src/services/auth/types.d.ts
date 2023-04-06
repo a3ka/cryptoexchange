@@ -10,6 +10,8 @@ import {
   refreshOutput,
   verifyInput,
   verifyOutput,
+  createLedgerInput,
+  createLedgerOutput,
 } from './schema.js';
 
 interface AuthCommands {
@@ -32,5 +34,9 @@ interface AuthCommands {
   verify: Command<{
     Data: FromSchema<typeof verifyInput>;
     Returns: FromSchema<typeof verifyOutput>;
+  }>;
+  createLedger: Command<{
+    Data: FromSchema<typeof createLedgerInput>;
+    Returns: FromSchema<typeof createLedgerOutput>;
   }>;
 }

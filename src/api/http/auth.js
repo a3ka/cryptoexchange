@@ -9,6 +9,14 @@ export const signUp = {
 };
 
 /** @type HttpRoute */
+export const createLedger = {
+  method: 'POST',
+  url: '/create-ledger',
+  inputSource: 'body',
+  command: { service: 'auth', method: 'createLedger' },
+};
+
+/** @type HttpRoute */
 export const signIn = {
   method: 'POST',
   url: '/sign-in',
