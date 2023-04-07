@@ -9,6 +9,8 @@ import {
   getBalanceOutput,
   getTransactionsInput,
   getTransactionsOutput,
+  addEthAddressBalanceListenerInput,
+  addEthAddressBalanceListenerOutput,
 } from './schema.js';
 
 interface AccountCommands {
@@ -32,6 +34,10 @@ interface AccountCommands {
     Data: FromSchema<typeof getTransactionsInput>;
     Returns: FromSchema<typeof getTransactionsOutput>;
   }>;
+  // addEthAddressBalanceListener: Command<{
+  //   Data: FromSchema<typeof addEthAddressBalanceListenerInput>;
+  //   Returns: FromSchema<typeof addEthAddressBalanceListenerOutput>;
+  // }>;
 }
 
 export function getAccountBalance(

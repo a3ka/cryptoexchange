@@ -7,3 +7,11 @@ export const transfer = {
   inputSource: 'body',
   command: { service: 'account', method: 'transfer' },
 };
+
+/** @type HttpRoute */
+export const addEthAddressBalanceListener = {
+  method: 'POST',
+  url: '/eth-address-balance-listener',
+  inputSource: 'body',
+  command: { service: 'account', method: 'addEthAddressBalanceListener' },
+};
