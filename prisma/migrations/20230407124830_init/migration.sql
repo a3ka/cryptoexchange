@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "LedgerType" AS ENUM ('asset', 'liability', 'revenue', 'expense', 'gain', 'loss');
+CREATE TYPE "NetworkType" AS ENUM ('btc', 'btcTestNetwork', 'eth', 'goerli');
 
 -- CreateEnum
 CREATE TYPE "AccountTransactionTypeInternal" AS ENUM ('credit', 'debit');
@@ -10,12 +10,14 @@ CREATE TYPE "AccountTransactionTypeExternal" AS ENUM ('deposit', 'withdrawal', '
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
+    "userIndex" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "accountId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -36,7 +38,6 @@ CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" TEXT NOT NULL,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
@@ -53,8 +54,9 @@ CREATE TABLE "AccountStatement" (
 -- CreateTable
 CREATE TABLE "Ledger" (
     "id" TEXT NOT NULL,
-    "type" "LedgerType" NOT NULL,
-    "name" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
+    "network" "NetworkType" NOT NULL,
+    "walletAddress" TEXT,
 
     CONSTRAINT "Ledger_pkey" PRIMARY KEY ("id")
 );
@@ -96,19 +98,25 @@ CREATE TABLE "AccountTransaction" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_accountId_key" ON "User"("accountId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Session_token_key" ON "Session"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Ledger_name_key" ON "Ledger"("name");
+CREATE UNIQUE INDEX "Ledger_accountId_network_key" ON "Ledger"("accountId", "network");
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AccountStatement" ADD CONSTRAINT "AccountStatement_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AccountStatement" ADD CONSTRAINT "AccountStatement_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Ledger" ADD CONSTRAINT "Ledger_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LedgerStatement" ADD CONSTRAINT "LedgerStatement_ledgerId_fkey" FOREIGN KEY ("ledgerId") REFERENCES "Ledger"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -120,7 +128,7 @@ ALTER TABLE "LedgerTransaction" ADD CONSTRAINT "LedgerTransaction_fromId_fkey" F
 ALTER TABLE "LedgerTransaction" ADD CONSTRAINT "LedgerTransaction_toId_fkey" FOREIGN KEY ("toId") REFERENCES "Ledger"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AccountTransaction" ADD CONSTRAINT "AccountTransaction_ledgerId_fkey" FOREIGN KEY ("ledgerId") REFERENCES "Ledger"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AccountTransaction" ADD CONSTRAINT "AccountTransaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AccountTransaction" ADD CONSTRAINT "AccountTransaction_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AccountTransaction" ADD CONSTRAINT "AccountTransaction_ledgerId_fkey" FOREIGN KEY ("ledgerId") REFERENCES "Ledger"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
