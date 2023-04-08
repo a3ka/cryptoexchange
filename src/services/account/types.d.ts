@@ -1,6 +1,12 @@
 import type { Command } from '../types';
 import type { FromSchema } from 'json-schema-to-ts';
-import type { Prisma, PrismaClient, Account as AccountModel } from '@prisma/client';
+import type {
+  Prisma,
+  PrismaClient,
+  Account as AccountModel,
+  Ledger,
+  LedgerStatement,
+} from '@prisma/client';
 import {
   depositInput,
   withdrawInput,
@@ -9,8 +15,6 @@ import {
   getBalanceOutput,
   getTransactionsInput,
   getTransactionsOutput,
-  addEthAddressBalanceListenerInput,
-  addEthAddressBalanceListenerOutput,
 } from './schema.js';
 
 interface AccountCommands {
@@ -34,13 +38,15 @@ interface AccountCommands {
     Data: FromSchema<typeof getTransactionsInput>;
     Returns: FromSchema<typeof getTransactionsOutput>;
   }>;
-  // addEthAddressBalanceListener: Command<{
-  //   Data: FromSchema<typeof addEthAddressBalanceListenerInput>;
-  //   Returns: FromSchema<typeof addEthAddressBalanceListenerOutput>;
-  // }>;
 }
 
 export function getAccountBalance(
   db: Prisma.TransactionClient | PrismaClient,
   accountId: AccountModel['id'],
 ): Promise<number>;
+
+export function addLatestLedgerStatement(
+  db: Prisma.TransactionClient | PrismaClient,
+  ledgerId: Ledger['id'],
+  amountAddOrSubtract: LedgerStatement['balance'],
+): Promise<LedgerStatement>;

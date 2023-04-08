@@ -1,16 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["extendedWhereUnique"]
 }
 
 generator jsonSchema {
   provider                 = "prisma-json-schema-generator"
+  output                   = "./"
   includeRequiredFields    = "true"
   keepRelationScalarFields = "true"
-  output                   = "./"
 }
 
 datasource db {
@@ -19,16 +16,17 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String    @id @default(uuid())
+  userIndex    Int       @default(autoincrement())
+  email        String    @unique
   firstName    String
   lastName     String
   passwordHash String
-  createdAt    DateTime @default(now())
-  udpatedAt    DateTime @updatedAt
-
-  sessions Session[]
-  account Account?
+  createdAt    DateTime  @default(now())
+  udpatedAt    DateTime  @updatedAt
+  accountId    String?   @unique
+  sessions     Session[]
+  account      Account?  @relation(fields: [accountId], references: [id])
 }
 
 model Session {
@@ -36,56 +34,48 @@ model Session {
   token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  owner        User                 @relation(fields: [userId], references: [id])
-  userId       String               @unique
+  id           String               @id @default(uuid())
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
   statements   AccountStatement[]
   transactions AccountTransaction[]
+  ledgers      Ledger[]
+  user         User?
 }
 
 model AccountStatement {
-  date    DateTime @db.Date
-  balance Float
-
-  account   Account @relation(fields: [accountId], references: [id])
+  date      DateTime @db.Date
+  balance   Float
   accountId String
+  account   Account  @relation(fields: [accountId], references: [id])
 
   @@id([accountId, date])
 }
 
 model Ledger {
-  id      String     @id @default(uuid())
-  network NetworkType
-  // name    String     @unique
+  id            String               @id @default(uuid())
+  accountId     String
+  network       NetworkType
+  walletAddress String?
+  account       Account              @relation(fields: [accountId], references: [id])
+  transactions  AccountTransaction[]
+  statements    LedgerStatement[]
+  credits       LedgerTransaction[]  @relation("credit")
+  debits        LedgerTransaction[]  @relation("debit")
 
-  statements   LedgerStatement[]
-  credits      LedgerTransaction[]  @relation(name: "credit")
-  debits       LedgerTransaction[]  @relation(name: "debit")
-  transactions AccountTransaction[]
-}
-
-enum NetworkType {
-  btc
-  btcTestNetwork
-  eth
-  guorli
+  @@unique([accountId, network])
 }
 
 model LedgerStatement {
-  date    DateTime @default(now()) @db.Date
-  balance Float
-
-  ledger   Ledger @relation(fields: [ledgerId], references: [id])
+  date     DateTime @default(now()) @db.Date
+  balance  Float
   ledgerId String
+  ledger   Ledger   @relation(fields: [ledgerId], references: [id])
 
   @@id([ledgerId, date])
 }
@@ -94,11 +84,10 @@ model LedgerTransaction {
   id     String   @id @default(uuid())
   amount Float
   date   DateTime @default(now())
-
-  from   Ledger @relation(name: "credit", fields: [fromId], references: [id])
   fromId String
-  to     Ledger @relation(name: "debit", fields: [toId], references: [id])
   toId   String
+  from   Ledger   @relation("credit", fields: [fromId], references: [id])
+  to     Ledger   @relation("debit", fields: [toId], references: [id])
 }
 
 model AccountTransaction {
@@ -107,11 +96,17 @@ model AccountTransaction {
   amount       Float
   typeInternal AccountTransactionTypeInternal
   typeExternal AccountTransactionTypeExternal
+  ledgerId     String
+  accountId    String
+  account      Account                        @relation(fields: [accountId], references: [id])
+  ledger       Ledger                         @relation(fields: [ledgerId], references: [id])
+}
 
-  ledger    Ledger  @relation(fields: [ledgerId], references: [id])
-  ledgerId  String
-  account   Account @relation(fields: [accountId], references: [id])
-  accountId String
+enum NetworkType {
+  btc
+  btcTestNetwork
+  eth
+  goerli
 }
 
 enum AccountTransactionTypeInternal {
