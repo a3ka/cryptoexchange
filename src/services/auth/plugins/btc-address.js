@@ -1,7 +1,7 @@
-import bitcoin from 'bitcoinjs-lib';
+import bitcoin, { networks } from 'bitcoinjs-lib';
 import { BIP32Factory } from 'bip32';
 import * as ecc from 'tiny-secp256k1';
-import bip39 from 'bip39';
+import bip39, { mnemonicToSeedSync } from 'bip39';
 
 const bip32 = BIP32Factory(ecc);
 
@@ -16,13 +16,13 @@ export async function addBtcAddressToUser(userIndex = 0, network) {
     'meadow letter author book window surround hope lunar lumber eight final ' +
     'surface report';
   // Create an HD wallet from the mnemonic
-  const seed = bip39.mnemonicToSeedSync(MNEMONIC);
+  const seed = mnemonicToSeedSync(MNEMONIC);
   const hdnode = bip32.fromSeed(seed, network);
 
   // Derive the first account from the HD wallet
   let path;
-  if (network === bitcoin.networks.bitcoin) path = `m/49'/0'/0'/0/${userIndex}`;
-  if (network === bitcoin.networks.testnet) path = `m/49'/1'/0'/0/${userIndex}`;
+  if (network === networks.bitcoin) path = `m/49'/0'/0'/0/${userIndex}`;
+  if (network === networks.testnet) path = `m/49'/1'/0'/0/${userIndex}`;
 
   const keypair = hdnode.derivePath(path);
 

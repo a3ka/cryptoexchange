@@ -1,11 +1,11 @@
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { JsonRpcProvider } from '@ethersproject/providers';
 
 // const provider = new ethers.providers.InfuraProvider('mainnet', 'YOUR_INFURA_API_KEY');
 // const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
 const provider = new JsonRpcProvider('http://localhost:7545');
 
-export const ethAddressBalanceListener = async (ethAddress) => {
+export async function ethAddressBalanceListener(ethAddress) {
   const initialBalance = await provider.getBalance(ethAddress);
 
   return new Promise((resolve, reject) => {
@@ -44,4 +44,4 @@ export const ethAddressBalanceListener = async (ethAddress) => {
       resolve(false);
     }, 300000);
   });
-};
+}

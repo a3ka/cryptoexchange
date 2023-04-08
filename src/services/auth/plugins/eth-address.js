@@ -19,7 +19,7 @@ dotenv.config();
 export async function addEthAddressToUser(userIndex, network) {
   const MNEMONIC =
     // process.env.MNEMONIC_ETH ||
-    'orange waste key ten girl slight often below spin upon tackle ramp';
+    'puppy grab copy again supreme carbon escape tonight broken tongue better viable';
 
   // Create an HD wallet from the mnemonic
   const hdnode = ethers.utils.HDNode.fromMnemonic(MNEMONIC);

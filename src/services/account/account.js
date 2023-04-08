@@ -2,11 +2,13 @@
 /** @typedef {import('./types').getAccountBalance} getAccountBalance */
 /** @typedef {import('./types').addLatestLedgerStatement} addLatestLedgerStatement */
 import { ServiceError } from '../error.js';
-import { ethAddressBalanceListener } from './plugins/ethAddressBalanceListener';
+import { ethAddressBalanceListener } from './plugins/ethAddressBalanceListener.js';
 import {
   depositInput,
   getBalanceInput,
   getBalanceOutput,
+  getLedgerBalanceInput,
+  getLedgerBalanceOutput,
   getTransactionsInput,
   getTransactionsOutput,
   transferInput,
@@ -170,16 +172,24 @@ const getBalance = {
   },
 };
 
-// /** @type Commands['getBalance'] */
-// const getLedgerBalance = {
-//   auth: {},
-//   input: getBalanceInput,
-//   output: getBalanceOutput,
-//   handler: async (infra, { data: { accountId } }) => {
-//     const balance = await getAccountBalance(infra.db, accountId);
-//     return { balance };
-//   },
-// };
+/** @type Commands['getLedgerBalance'] */
+const getLedgerBalance = {
+  auth: {},
+  input: getLedgerBalanceInput,
+  output: getLedgerBalanceOutput,
+  handler: async (infra, { data: { ledgerId } }) => {
+    const { db } = infra;
+
+    const [balance] = await db.ledgerStatement.findMany({
+      where: { ledgerId },
+      select: { balance: true, date: true },
+      orderBy: { date: 'desc' },
+      take: 1,
+    });
+
+    return { balance };
+  },
+};
 
 /** @type Commands['getTransactions'] */
 const getTransactions = {
@@ -276,4 +286,5 @@ export const commands = {
   transfer,
   getBalance,
   getTransactions,
+  getLedgerBalance,
 };

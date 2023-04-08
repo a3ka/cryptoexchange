@@ -15,6 +15,8 @@ import {
   getBalanceOutput,
   getTransactionsInput,
   getTransactionsOutput,
+  getLedgerBalanceInput,
+  getLedgerBalanceOutput,
 } from './schema.js';
 
 interface AccountCommands {
@@ -37,6 +39,10 @@ interface AccountCommands {
   getTransactions: Command<{
     Data: FromSchema<typeof getTransactionsInput>;
     Returns: FromSchema<typeof getTransactionsOutput>;
+  }>;
+  getLedgerBalance: Command<{
+    Data: FromSchema<typeof getLedgerBalanceInput>;
+    Returns: FromSchema<typeof getLedgerBalanceOutput>;
   }>;
 }
 
