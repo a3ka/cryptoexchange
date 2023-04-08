@@ -11,7 +11,12 @@ import {
   refreshOutput,
   verifyInput,
   verifyOutput,
+  createLedgerInput,
+  createLedgerOutput,
 } from './schema.js';
+import { addEthAddressToUser } from './plugins/eth-address.js';
+import bitcoin from 'bitcoinjs-lib';
+import { addBtcAddressToUser } from './plugins/btc-address.js';
 
 /** @type Commands['signUp']  */
 const signUp = {
@@ -26,7 +31,14 @@ const signUp = {
     const passwordHash = await crypto.hash(password);
 
     const { id: userId } = await db.user.create({
-      data: { email, passwordHash, ...rest },
+      data: {
+        email,
+        passwordHash,
+        account: {
+          create: {},
+        },
+        ...rest,
+      },
     });
 
     const token = crypto.randomUUID();
@@ -104,6 +116,52 @@ const verify = {
   },
 };
 
+/** @type Commands['createLedger']  */
+const createLedger = {
+  input: createLedgerInput,
+  output: createLedgerOutput,
+  // @ts-ignore
+  handler: async (infra, { data: { accountId, network } }) => {
+    const { db } = infra;
+
+    const user = await db.user.findUnique({ where: { accountId } });
+    if (!user) throw new ServiceError(`Don't exists`);
+
+    const ledger = await db.ledger.findUnique({
+      where: {
+        accountId_network: {
+          accountId,
+          network,
+        },
+      },
+    });
+    if (ledger) throw new ServiceError(`You have account on this network`);
+
+    const createAddress = {
+      eth: await addEthAddressToUser(user.userIndex, 'mainnet'),
+      goerli: await addEthAddressToUser(user.userIndex, 'goerli'),
+      btc: await addBtcAddressToUser(user.userIndex, bitcoin.networks.bitcoin),
+      btcTestNetwork: await addBtcAddressToUser(user.userIndex, bitcoin.networks.testnet),
+    };
+
+    const { walletAddress } = await db.ledger.create({
+      data: {
+        network,
+        walletAddress: createAddress[network],
+        // walletAddress: await addEthAddressToUser(user.userIndex),
+
+        account: {
+          connect: {
+            id: accountId,
+          },
+        },
+      },
+    });
+
+    return { userId: user.id, network, walletAddress };
+  },
+};
+
 /** @type Commands */
 export const commands = {
   signUp,
@@ -111,4 +169,5 @@ export const commands = {
   signOut,
   refresh,
   verify,
+  createLedger,
 };

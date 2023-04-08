@@ -1,0 +1,9 @@
+{
+    "cSpell.words": [
+        "ethersproject"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+
+}

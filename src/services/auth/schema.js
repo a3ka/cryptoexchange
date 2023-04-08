@@ -2,7 +2,7 @@
 import entities from '../../../prisma/json-schema.js';
 import * as schema from '../../lib/schema.js';
 
-const { user, session } = entities;
+const { user, session, ledger, account } = entities;
 
 const authResult = /** @type {const} */ ({
   ...schema.strictObjectProperties,
@@ -51,4 +51,23 @@ export const verifyOutput = /** @type {const} */ ({
   ...schema.strictObjectProperties,
   required: ['userId'],
   properties: { userId: user.properties.id },
+});
+
+export const createLedgerInput = /** @type {const} */ ({
+  ...schema.strictObjectProperties,
+  required: ['accountId', 'network'],
+  properties: {
+    accountId: account.properties.id,
+    // accountId: ledger.properties.accountId,
+    network: ledger.properties.network,
+  },
+});
+export const createLedgerOutput = /** @type {const} */ ({
+  ...schema.strictObjectProperties,
+  required: ['userId', 'network', 'walletAddress'],
+  properties: {
+    userId: user.properties.id,
+    network: ledger.properties.network,
+    walletAddress: ledger.properties.walletAddress,
+  },
 });

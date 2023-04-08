@@ -7,6 +7,9 @@
         "id": {
           "type": "string"
         },
+        "userIndex": {
+          "type": "integer"
+        },
         "email": {
           "type": "string"
         },
@@ -26,6 +29,12 @@
         "udpatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "accountId": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "sessions": {
           "type": "array",
@@ -62,11 +71,11 @@
           "type": "string",
           "format": "date-time"
         },
-        "user": {
-          "$ref": "#/definitions/User"
-        },
         "userId": {
           "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
         }
       }
     },
@@ -84,12 +93,6 @@
           "type": "string",
           "format": "date-time"
         },
-        "owner": {
-          "$ref": "#/definitions/User"
-        },
-        "userId": {
-          "type": "string"
-        },
         "statements": {
           "type": "array",
           "items": {
@@ -101,6 +104,22 @@
           "items": {
             "$ref": "#/definitions/AccountTransaction"
           }
+        },
+        "ledgers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Ledger"
+          }
+        },
+        "user": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -114,11 +133,11 @@
         "balance": {
           "type": "number"
         },
-        "account": {
-          "$ref": "#/definitions/Account"
-        },
         "accountId": {
           "type": "string"
+        },
+        "account": {
+          "$ref": "#/definitions/Account"
         }
       }
     },
@@ -128,14 +147,32 @@
         "id": {
           "type": "string"
         },
+        "accountId": {
+          "type": "string"
+        },
         "network": {
           "type": "string",
           "enum": [
             "btc",
             "btcTestNetwork",
             "eth",
-            "guorli"
+            "goerli"
           ]
+        },
+        "walletAddress": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "account": {
+          "$ref": "#/definitions/Account"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AccountTransaction"
+          }
         },
         "statements": {
           "type": "array",
@@ -154,12 +191,6 @@
           "items": {
             "$ref": "#/definitions/LedgerTransaction"
           }
-        },
-        "transactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/AccountTransaction"
-          }
         }
       }
     },
@@ -173,11 +204,11 @@
         "balance": {
           "type": "number"
         },
-        "ledger": {
-          "$ref": "#/definitions/Ledger"
-        },
         "ledgerId": {
           "type": "string"
+        },
+        "ledger": {
+          "$ref": "#/definitions/Ledger"
         }
       }
     },
@@ -194,17 +225,17 @@
           "type": "string",
           "format": "date-time"
         },
-        "from": {
-          "$ref": "#/definitions/Ledger"
-        },
         "fromId": {
           "type": "string"
         },
-        "to": {
-          "$ref": "#/definitions/Ledger"
-        },
         "toId": {
           "type": "string"
+        },
+        "from": {
+          "$ref": "#/definitions/Ledger"
+        },
+        "to": {
+          "$ref": "#/definitions/Ledger"
         }
       }
     },
@@ -236,17 +267,17 @@
             "bankFee"
           ]
         },
-        "ledger": {
-          "$ref": "#/definitions/Ledger"
-        },
         "ledgerId": {
+          "type": "string"
+        },
+        "accountId": {
           "type": "string"
         },
         "account": {
           "$ref": "#/definitions/Account"
         },
-        "accountId": {
-          "type": "string"
+        "ledger": {
+          "$ref": "#/definitions/Ledger"
         }
       }
     }

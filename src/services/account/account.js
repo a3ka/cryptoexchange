@@ -1,6 +1,8 @@
 /** @typedef {import('./types').AccountCommands} Commands */
 /** @typedef {import('./types').getAccountBalance} getAccountBalance */
+/** @typedef {import('./types').addLatestLedgerStatement} addLatestLedgerStatement */
 import { ServiceError } from '../error.js';
+import { ethAddressBalanceListener } from './plugins/ethAddressBalanceListener';
 import {
   depositInput,
   getBalanceInput,
@@ -9,28 +11,47 @@ import {
   getTransactionsOutput,
   transferInput,
   withdrawInput,
+  // addEthAddressBalanceListenerInput,
+  // addEthAddressBalanceListenerOutput,
 } from './schema.js';
 
 /** @type Commands['deposit'] */
 const deposit = {
   auth: {},
   input: depositInput,
-  handler: async (infra, { data: { accountId, amount } }) => {
+  handler: async (infra, { data: { accountId, network } }) => {
     const { db, bus } = infra;
 
-    const ledger = await db.ledger.findUnique({ where: { name: 'HouseCash' } });
+    const ledger = await db.ledger.findUnique({
+      where: {
+        accountId_network: {
+          accountId,
+          network,
+        },
+      },
+    });
     if (!ledger) throw new ServiceError('Transaction failed');
+
+    const resultOfDeposit = await ethAddressBalanceListener(ledger.walletAddress);
+    if (!resultOfDeposit.balanceIncreasedt) throw new ServiceError('Timed out');
 
     await db.accountTransaction.create({
       data: {
         accountId,
-        amount,
+        amount: resultOfDeposit.increaseAmount,
         ledgerId: ledger.id,
         typeInternal: 'debit',
         typeExternal: 'deposit',
       },
     });
-    await bus.publish('account:deposit', { data: { accountId, amount } });
+    await bus.publish('account:deposit', {
+      data: {
+        accountId,
+        amount: resultOfDeposit.increaseAmount,
+      },
+    });
+
+    await addLatestLedgerStatement(db, ledger.id, resultOfDeposit);
   },
 };
 
@@ -149,6 +170,17 @@ const getBalance = {
   },
 };
 
+// /** @type Commands['getBalance'] */
+// const getLedgerBalance = {
+//   auth: {},
+//   input: getBalanceInput,
+//   output: getBalanceOutput,
+//   handler: async (infra, { data: { accountId } }) => {
+//     const balance = await getAccountBalance(infra.db, accountId);
+//     return { balance };
+//   },
+// };
+
 /** @type Commands['getTransactions'] */
 const getTransactions = {
   auth: {},
@@ -192,6 +224,49 @@ const getAccountBalance = async (db, accountId) => {
   const credit = creditSum.amount ?? 0;
   const balance = statement ? statement.balance + (debit - credit) : debit - credit;
   return balance;
+};
+
+/** @type addLatestLedgerStatement */
+const addLatestLedgerStatement = async (db, ledgerId, amountAddOrSubtract) => {
+  // Find the latest LedgerStatement associated with the Ledger
+  const latestStatement = await db.ledger.findUnique({
+    where: { id: ledgerId },
+    select: {
+      statements: {
+        orderBy: { date: 'desc' },
+        take: 1,
+        select: { balance: true },
+      },
+    },
+  });
+
+  let result;
+  if (latestStatement?.statements.length) {
+    // Update the latest LedgerStatement with the new balance
+    const { balance: latestBalance } = latestStatement.statements[0];
+    const newBalance = latestBalance + amountAddOrSubtract;
+
+    result = await db.ledgerStatement.create({
+      data: {
+        date: new Date(),
+        balance: newBalance,
+        ledger: { connect: { id: ledgerId } },
+      },
+    });
+  } else {
+    // Create a new LedgerStatement with the initial balance
+    const initialBalance = 0.0;
+    const newBalance = initialBalance + amountAddOrSubtract;
+
+    result = await db.ledgerStatement.create({
+      data: {
+        date: new Date(),
+        balance: newBalance,
+        ledger: { connect: { id: ledgerId } },
+      },
+    });
+  }
+  return result;
 };
 
 /** @type Commands */

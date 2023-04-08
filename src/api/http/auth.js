@@ -31,3 +31,12 @@ export const refresh = {
   inputSource: 'body',
   command: { service: 'auth', method: 'refresh' },
 };
+
+
+/** @type HttpRoute */
+export const createLedger = {
+  method: 'POST',
+  url: '/create-ledger',
+  inputSource: 'body',
+  command: { service: 'auth', method: 'createLedger' },
+};

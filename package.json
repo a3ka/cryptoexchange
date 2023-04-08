@@ -24,6 +24,7 @@
     "node": "18"
   },
   "dependencies": {
+    "@ethersproject/providers": "^5.7.2",
     "@fastify/auth": "^4.2.0",
     "@fastify/cors": "^8.2.0",
     "@fastify/swagger": "^8.2.1",
@@ -32,6 +33,7 @@
     "@prisma/client": "^4.10.1",
     "fastify": "^4.10.2",
     "fastify-plugin": "^4.4.0",
+    "hardhat": "^2.13.0",
     "pino": "^8.7.0",
     "prisma-json-schema-generator": "^2.0.17",
     "redis": "^4.6.4"

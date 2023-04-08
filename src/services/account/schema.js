@@ -2,11 +2,11 @@
 import entities from '../../../prisma/json-schema.js';
 import * as schema from '../../lib/schema.js';
 
-const { account, accountTransaction } = entities;
+const { account, accountTransaction, ledger, ledgerStatement } = entities;
 
 export const depositInput = /** @type {const} */ ({
   ...schema.strictObjectProperties,
-  required: ['accountId', 'amount'],
+  required: ['accountId', 'network', 'amount'],
   properties: {
     accountId: account.properties.id,
     amount: accountTransaction.properties.amount,
@@ -38,6 +38,12 @@ const accountIdInput = /** @type {const} */ ({
   properties: { accountId: account.properties.id },
 });
 
+const ledgerIdInput = /** @type {const} */ ({
+  ...schema.strictObjectProperties,
+  required: ['ledgerId'],
+  properties: { accountId: ledger.properties.id },
+});
+
 export const getBalanceInput = accountIdInput;
 export const getBalanceOutput = /** @type {const} */ ({
   ...schema.strictObjectProperties,
@@ -59,4 +65,11 @@ export const getTransactionsOutput = /** @type {const} */ ({
       accountId: accountTransaction.properties.accountId,
     },
   },
+});
+
+export const getLedgerBalanceInput = ledgerIdInput;
+export const getLedgerBalanceOutput = /** @type {const} */ ({
+  ...schema.strictObjectProperties,
+  required: ['balance'],
+  properties: { balance: ledgerStatement.properties.balance },
 });
