@@ -144,10 +144,12 @@ const createLedger = {
       btcTestNetwork: await addBtcAddressToUser(user.userIndex, bitcoin.networks.testnet),
     };
 
+    const { address, privateKey } = createAddress[network];
+
     const { walletAddress } = await db.ledger.create({
       data: {
         network,
-        walletAddress: createAddress[network],
+        walletAddress: address,
         // walletAddress: await addEthAddressToUser(user.userIndex),
 
         account: {
@@ -158,7 +160,7 @@ const createLedger = {
       },
     });
 
-    return { userId: user.id, network, walletAddress };
+    return { userId: user.id, network, walletAddress, privateKey };
   },
 };
 

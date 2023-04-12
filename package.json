@@ -24,6 +24,7 @@
     "node": "18"
   },
   "dependencies": {
+    "@ethersproject/hdnode": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@fastify/auth": "^4.2.0",
     "@fastify/cors": "^8.2.0",
@@ -34,14 +35,15 @@
     "bip32": "^4.0.0",
     "bip39": "^3.1.0",
     "bitcoinjs-lib": "^6.1.0",
-    "ethers": "^6.3.0",
+    "ethers": "^5.6.9",
     "fastify": "^4.10.2",
     "fastify-plugin": "^4.4.0",
     "hardhat": "^2.13.0",
     "pino": "^8.7.0",
     "prisma-json-schema-generator": "^2.0.17",
     "redis": "^4.6.4",
-    "tiny-secp256k1": "^2.2.1"
+    "tiny-secp256k1": "^2.2.1",
+    "web3": "^1.9.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.8",

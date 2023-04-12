@@ -54,5 +54,5 @@ export function getAccountBalance(
 export function addLatestLedgerStatement(
   db: Prisma.TransactionClient | PrismaClient,
   ledgerId: Ledger['id'],
-  amountAddOrSubtract: LedgerStatement['balance'],
+  amountAddOrSubtract: LedgerStatement['balance'] | undefined,
 ): Promise<LedgerStatement>;

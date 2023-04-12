@@ -72,12 +72,13 @@ model Ledger {
 }
 
 model LedgerStatement {
-  date     DateTime @default(now()) @db.Date
+  date     DateTime @default(now()) 
   balance  Float
   ledgerId String
   ledger   Ledger   @relation(fields: [ledgerId], references: [id])
 
   @@id([ledgerId, date])
+  @@unique([ledgerId, date])
 }
 
 model LedgerTransaction {

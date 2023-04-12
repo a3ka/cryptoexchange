@@ -1,6 +1,7 @@
 /** @typedef {import('./types').EthWalletPlugin} Plugin */
 // import fastifyPlugin from 'fastify-plugin';
 import { ethers } from 'ethers';
+import { HDNode } from '@ethersproject/hdnode';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -22,7 +23,8 @@ export async function addEthAddressToUser(userIndex, network) {
     'puppy grab copy again supreme carbon escape tonight broken tongue better viable';
 
   // Create an HD wallet from the mnemonic
-  const hdnode = ethers.utils.HDNode.fromMnemonic(MNEMONIC);
+  // const hdnode = ethers.utils.HDNode.fromMnemonic(MNEMONIC);
+  const hdnode = HDNode.fromMnemonic(MNEMONIC);
 
   // Derive the first account from the HD wallet
   const path = `m/44'/60'/0'/0/${userIndex.toString()}`;
@@ -31,12 +33,11 @@ export async function addEthAddressToUser(userIndex, network) {
   // const provider = new ethers.providers.InfuraProvider(network, process.env.RPC_URL_`${network}`);
 
   // Return the account's address and private key
-  // return {
-  //   address: wallet.address,
-  //   privateKey: wallet.privateKey,
-  //   provider,
-  // };
+  return {
+    address: wallet.address,
+    privateKey: wallet.privateKey,
+    // provider,
+  };
 
-  // return wallet.privateKey;
-  return wallet.address;
+  // return wallet.address;
 }

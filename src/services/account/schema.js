@@ -8,7 +8,8 @@ export const depositInput = /** @type {const} */ ({
   ...schema.strictObjectProperties,
   required: ['accountId', 'network', 'amount'],
   properties: {
-    accountId: account.properties.id,
+    accountId: ledger.properties.accountId,
+    network: ledger.properties.network,
     amount: accountTransaction.properties.amount,
   },
 });

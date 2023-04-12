@@ -2,7 +2,8 @@
 /** @typedef {import('./types').getAccountBalance} getAccountBalance */
 /** @typedef {import('./types').addLatestLedgerStatement} addLatestLedgerStatement */
 import { ServiceError } from '../error.js';
-import { ethAddressBalanceListener } from './plugins/ethAddressBalanceListener.js';
+// import { ethAddressBalanceListener } from './plugins/ethAddressBalanceListener.js';
+import { monitorBalance } from './plugins/monitorBalance.js';
 import {
   depositInput,
   getBalanceInput,
@@ -19,9 +20,9 @@ import {
 
 /** @type Commands['deposit'] */
 const deposit = {
-  auth: {},
+  // auth: {},
   input: depositInput,
-  handler: async (infra, { data: { accountId, network } }) => {
+  handler: async (infra, { data: { accountId, network, amount } }) => {
     const { db, bus } = infra;
 
     const ledger = await db.ledger.findUnique({
@@ -34,8 +35,16 @@ const deposit = {
     });
     if (!ledger) throw new ServiceError('Transaction failed');
 
-    const resultOfDeposit = await ethAddressBalanceListener(ledger.walletAddress);
-    if (!resultOfDeposit.balanceIncreasedt) throw new ServiceError('Timed out');
+    // const resultOfDeposit = await ethAddressBalanceListener(ledger.walletAddress);
+    const resultOfDeposit = await monitorBalance(ledger.walletAddress);
+
+    console.log('🚀 ~ file: account.js:40 ~ handler: ~ resultOfDeposit!!!!!:', resultOfDeposit);
+    console.log(
+      '🚀 ~ file: account.js:40 ~ handler: ~ resultOfDeposit.increaseAmount!!!!!:',
+      typeof resultOfDeposit.increaseAmount,
+    );
+
+    if (!resultOfDeposit.success) throw new ServiceError('Timed out');
 
     await db.accountTransaction.create({
       data: {
@@ -53,7 +62,7 @@ const deposit = {
       },
     });
 
-    await addLatestLedgerStatement(db, ledger.id, resultOfDeposit);
+    await addLatestLedgerStatement(db, ledger.id, resultOfDeposit.increaseAmount);
   },
 };
 
@@ -250,11 +259,21 @@ const addLatestLedgerStatement = async (db, ledgerId, amountAddOrSubtract) => {
     },
   });
 
+  console.log(
+    '🚀 ~ file: account.js:261 ~ addLatestLedgerStatement ~ latestStatement:',
+    latestStatement,
+  );
+
   let result;
   if (latestStatement?.statements.length) {
     // Update the latest LedgerStatement with the new balance
     const { balance: latestBalance } = latestStatement.statements[0];
+    console.log(
+      '🚀 ~ file: account.js:271 ~ addLatestLedgerStatement ~ latestBalance:',
+      latestBalance,
+    );
     const newBalance = latestBalance + amountAddOrSubtract;
+    console.log('🚀 ~ file: account.js:273 ~ addLatestLedgerStatement ~ newBalance:', newBalance);
 
     result = await db.ledgerStatement.create({
       data: {
@@ -263,6 +282,9 @@ const addLatestLedgerStatement = async (db, ledgerId, amountAddOrSubtract) => {
         ledger: { connect: { id: ledgerId } },
       },
     });
+    console.log('🚀 ~ file: account.js:280 ~ addLatestLedgerStatement ~ resultIF:', result);
+
+    return result;
   } else {
     // Create a new LedgerStatement with the initial balance
     const initialBalance = 0.0;
@@ -275,8 +297,10 @@ const addLatestLedgerStatement = async (db, ledgerId, amountAddOrSubtract) => {
         ledger: { connect: { id: ledgerId } },
       },
     });
+    console.log('🚀 ~ file: account.js:294 ~ addLatestLedgerStatement ~ resultELSE:', result);
+
+    return result;
   }
-  return result;
 };
 
 /** @type Commands */

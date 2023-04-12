@@ -7,3 +7,11 @@ export const transfer = {
   inputSource: 'body',
   command: { service: 'account', method: 'transfer' },
 };
+
+/** @type HttpRoute */
+export const deposit = {
+  method: 'POST',
+  url: '/deposit',
+  inputSource: 'body',
+  command: { service: 'account', method: 'deposit' },
+};
