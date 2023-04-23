@@ -22,7 +22,8 @@ import {
 interface AccountCommands {
   deposit: Command<{
     Data: FromSchema<typeof depositInput>;
-    Returns: void;
+    // Returns: void;
+    Returns: FromSchema<typeof depositOutput>;;
   }>;
   withdraw: Command<{
     Data: FromSchema<typeof withdrawInput>;

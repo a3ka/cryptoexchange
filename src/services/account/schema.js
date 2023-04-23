@@ -6,11 +6,17 @@ const { account, accountTransaction, ledger, ledgerStatement } = entities;
 
 export const depositInput = /** @type {const} */ ({
   ...schema.strictObjectProperties,
-  required: ['accountId', 'network', 'amount'],
+  required: ['accountId', 'network'],
   properties: {
     accountId: ledger.properties.accountId,
     network: ledger.properties.network,
-    amount: accountTransaction.properties.amount,
+  },
+});
+
+export const depositOutput = /** @type {const} */ ({
+  items: {
+    ...schema.strictObjectProperties,
+    properties: { response: { type: 'string' } },
   },
 });
 
